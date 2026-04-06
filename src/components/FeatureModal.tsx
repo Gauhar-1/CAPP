@@ -8,26 +8,25 @@ import { FeatureBuilderForm, FeatureFormValues } from './FeatureBuilderForm';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (feature: PartFeature) => void;
+  onSaveFeature: (featureData: any) => void;
+  initialData?: any;
 }
 
-export function FeatureModal({ isOpen, onClose, onAdd }: Props) {
+export function FeatureModal({ isOpen, onClose, onSaveFeature, initialData }: Props) {
   if (!isOpen) return null;
 
   const handleSave = (data: FeatureFormValues & { name: string }) => {
-    // Generate a unique ID and map form values into the expected PartFeature structure
-    const newFeature: PartFeature = {
-      id: Math.random().toString(36).substr(2, 9),
-      type: data.type as any, // Cast to any since we changed the types
+    const featureData: any = {
+      type: data.type,
       name: data.name || data.type,
-      parameters: { ...data } as any
+      parameters: { ...data }
     };
     
-    // Clean up parameters (remove name and type to save space)
-    delete (newFeature.parameters as any).name;
-    delete (newFeature.parameters as any).type;
+    // Clean up parameters
+    delete featureData.parameters.name;
+    delete featureData.parameters.type;
 
-    onAdd(newFeature);
+    onSaveFeature(featureData);
     onClose();
   };
 
@@ -41,7 +40,7 @@ export function FeatureModal({ isOpen, onClose, onAdd }: Props) {
           </button>
         </div>
 
-        <FeatureBuilderForm onSave={handleSave} onCancel={onClose} />
+        <FeatureBuilderForm onSave={handleSave} onCancel={onClose} initialData={initialData} />
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ export function Sidebar() {
   const materials = ['Aluminum 6061', 'Mild Steel 1018', 'Titanium Grade 5', 'Brass'];
 
   return (
-    <aside className="w-80 border-r border-[#232a32] p-6 flex flex-col gap-8 h-full overflow-y-auto glass-panel rounded-none border-l-0 border-t-0 border-b-0 space-y-6">
+    <aside className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-[#232a32] p-4 lg:p-6 flex flex-col gap-4 lg:gap-8 h-auto lg:h-full lg:overflow-y-auto glass-panel rounded-none shrink-0 space-y-4 lg:space-y-6">
       <div className="flex items-center gap-3 text-cyan-400">
         <Cpu className="w-8 h-8" />
         <h1 className="text-xl font-bold tracking-wider uppercase text-white glow-text">

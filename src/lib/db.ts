@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://admin:50shadesofgrey@cluster0.yd2un65.mongodb.net/CAPP';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env');
@@ -21,6 +21,10 @@ async function connectDB() {
   if (cached.conn) {
     return cached.conn;
   }
+
+  if (!MONGODB_URI) {
+  throw new Error('Please define the MONGODB_URI environment variable inside .env');
+}
 
   if (!cached.promise) {
     const opts = {

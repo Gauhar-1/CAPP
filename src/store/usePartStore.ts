@@ -8,6 +8,7 @@ interface PartState {
   includeLifecycle: boolean;
   dimensions: { x: number; y: number; z: number };
   features: PartFeature[];
+  isLoading: boolean;
   setPartName: (partName: string) => void;
   setMaterial: (material: string) => void;
   setIncludeLifecycle: (include: boolean) => void;
@@ -15,6 +16,9 @@ interface PartState {
   addFeature: (feature: PartFeature) => void;
   removeFeature: (id: string) => void;
   updateFeature: (id: string, updates: Partial<PartFeature>) => void;
+  setFeatures: (features: PartFeature[]) => void;
+  applyTemplate: (template: any) => void;
+  setIsLoading: (isLoading: boolean) => void;
   loadFromBase64: (b64: string) => void;
   getBase64: () => string;
 }
@@ -27,6 +31,7 @@ export const usePartStore = create<PartState>()(
       includeLifecycle: false,
       dimensions: { x: 100, y: 100, z: 50 },
       features: [],
+      isLoading: false,
       setPartName: (partName) => set({ partName }),
       setMaterial: (material) => set({ material }),
       setIncludeLifecycle: (includeLifecycle) => set({ includeLifecycle }),
@@ -36,6 +41,13 @@ export const usePartStore = create<PartState>()(
       updateFeature: (id, updates) => set((state) => ({
         features: state.features.map(f => f.id === id ? { ...f, ...updates } : f)
       })),
+      setFeatures: (features) => set({ features }),
+      applyTemplate: (template) => set({
+        partName: template.familyName,
+        material: template.defaultMaterial,
+        features: template.standardFeatures
+      }),
+      setIsLoading: (isLoading) => set({ isLoading }),
       loadFromBase64: (b64) => {
         try {
           const json = atob(b64);

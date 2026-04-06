@@ -83,14 +83,16 @@ export type FeatureFormValues = z.infer<typeof featureSchema>;
 interface FeatureBuilderFormProps {
   onSave: (data: any) => void;
   onCancel: () => void;
+  initialData?: any;
 }
 
-export function FeatureBuilderForm({ onSave, onCancel }: FeatureBuilderFormProps) {
+export function FeatureBuilderForm({ onSave, onCancel, initialData }: FeatureBuilderFormProps) {
   const {
     register,
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors }
   } = useForm({
     resolver: zodResolver(featureSchema),
@@ -104,6 +106,24 @@ export function FeatureBuilderForm({ onSave, onCancel }: FeatureBuilderFormProps
 
   const selectedType = watch("type");
   const threadSize = watch("threadSize" as any);
+
+  // Populate initial data when editing
+  useEffect(() => {
+    if (initialData) {
+      reset({
+        ...initialData.parameters,
+        type: initialData.type,
+        name: initialData.name
+      });
+    } else {
+      reset({
+        type: "Face Mill",
+        name: "",
+        surfaceFinish: "3.2",
+        toleranceGrade: "H7"
+      } as any);
+    }
+  }, [initialData, reset]);
 
   // Auto-fill thread pitch
   useEffect(() => {

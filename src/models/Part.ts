@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IOperation {
   opNo: number;
   type: string;
+  machine: string;
   tooling: string;
   spindleSpeed: number;
   feedRate: number;
@@ -27,6 +28,7 @@ export interface IPart extends Document {
 const operationSchema = new Schema<IOperation>({
   opNo: Number,
   type: String,
+  machine: String,
   tooling: String,
   spindleSpeed: Number,
   feedRate: Number,

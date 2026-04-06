@@ -10,10 +10,12 @@ import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 
 export function RouteSheet() {
-  const { partName, material, dimensions, includeLifecycle, features, getBase64 } = usePartStore();
+  const { partName, material, dimensions, includeLifecycle, features, getBase64, setIsLoading } = usePartStore();
   const [operations, setOperations] = useState<any[]>([]);
 
   const { mutate: generatePlan, isPending } = useMutation({
+    onMutate: () => setIsLoading(true),
+    onSettled: () => setIsLoading(false),
     mutationFn: async () => {
       const response = await axios.post('/api/generate-plan', {
         partName,
@@ -53,9 +55,10 @@ export function RouteSheet() {
 
     autoTable(doc, {
       startY: 50,
-      head: [['Op No', 'Operation Type', 'Tooling', 'Spindle Speed (RPM)', 'Feed Rate (mm/min)']],
+      head: [['Op No', 'Machine', 'Operation Type', 'Tooling', 'Spindle Speed (RPM)', 'Feed Rate (mm/min)']],
       body: operations.map(op => [
         op.opNo,
+        op.machine,
         op.type,
         op.tooling,
         op.spindleSpeed,
@@ -69,8 +72,8 @@ export function RouteSheet() {
   };
 
   return (
-    <div className="w-[450px] border-l border-[#232a32] bg-[#0d0f12] h-full flex flex-col relative z-20">
-      <div className="p-6 border-b border-[#232a32] flex justify-between items-center bg-[#14181d]">
+    <div className="w-full lg:w-[450px] border-t lg:border-t-0 lg:border-l border-[#232a32] bg-[#0d0f12] h-[50vh] lg:h-full flex flex-col relative z-20 shrink-0">
+      <div className="p-4 lg:p-6 border-b border-[#232a32] flex justify-between items-center bg-[#14181d]">
         <div>
           <h2 className="text-lg font-bold text-white glow-text">Generated Route Sheet</h2>
           <p className="text-xs text-slate-400 mt-1">{partName} | {material}</p>
@@ -86,12 +89,7 @@ export function RouteSheet() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-2 relative">
-        {isPending ? (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#0d0f12]/80 backdrop-blur-sm">
-             <Loader2 className="w-12 h-12 text-cyan-400 animate-spin mb-4" />
-             <p className="text-cyan-400 font-mono text-sm tracking-widest animate-pulse">CALCULATING FEEDS & SPEEDS...</p>
-          </div>
-        ) : operations.length === 0 ? (
+        {operations.length === 0 && !isPending ? (
           <div className="h-full flex flex-col items-center justify-center text-slate-500 text-sm text-center px-6">
             <div className="mb-4 opacity-50">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -101,9 +99,10 @@ export function RouteSheet() {
         ) : (
           <div className="w-full">
             <div className="grid grid-cols-12 text-[10px] uppercase tracking-wider text-slate-500 pb-2 px-2 border-b border-[#232a32] mb-2 sticky top-0 bg-[#0d0f12] z-10 pt-2">
-              <div className="col-span-2">Op No</div>
-              <div className="col-span-4">Operation</div>
-              <div className="col-span-4">Tooling</div>
+              <div className="col-span-1">Op</div>
+              <div className="col-span-3">Machine</div>
+              <div className="col-span-3">Operation</div>
+              <div className="col-span-3">Tooling</div>
               <div className="col-span-2 text-right">Data</div>
             </div>
             <div className="space-y-2">
@@ -116,13 +115,16 @@ export function RouteSheet() {
                     transition={{ delay: idx * 0.05 }}
                     className="grid grid-cols-12 gap-2 text-sm items-center p-2 rounded-md hover:bg-[#14181d] transition-colors border border-transparent hover:border-[#232a32]"
                   >
-                    <div className="col-span-2 font-mono text-cyan-400 text-xs">
+                    <div className="col-span-1 font-mono text-cyan-400 text-xs">
                       {op.opNo.toString().padStart(4, '0')}
                     </div>
-                    <div className="col-span-4 text-slate-200 truncate pr-2" title={op.type}>
+                    <div className="col-span-3 text-slate-300 text-xs truncate pr-2" title={op.machine}>
+                      {op.machine}
+                    </div>
+                    <div className="col-span-3 text-slate-200 truncate pr-2" title={op.type}>
                       {op.type}
                     </div>
-                    <div className="col-span-4 text-slate-400 text-xs truncate pr-2" title={op.tooling}>
+                    <div className="col-span-3 text-slate-400 text-xs truncate pr-2" title={op.tooling}>
                       {op.tooling}
                     </div>
                     <div className="col-span-2 text-right text-[10px] text-slate-500 flex flex-col font-mono">
@@ -137,7 +139,7 @@ export function RouteSheet() {
         )}
       </div>
 
-      <div className="p-6 border-t border-[#232a32] bg-[#14181d] grid grid-cols-2 gap-4">
+      <div className="p-4 lg:p-6 border-t border-[#232a32] bg-[#14181d] grid grid-cols-2 gap-4">
         <button 
           onClick={() => {
             const url = new URL(window.location.href);

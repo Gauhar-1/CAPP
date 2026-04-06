@@ -59,9 +59,12 @@ export async function generatePlan(
         F = Math.round(N * ipt * flutes);
       }
 
+      const machine = '3-Axis CNC Mill';
+
       allOperations.push({
         featureRefId: feature.id || `f${featureCounter}`,
         type: opType,
+        machine,
         tooling,
         spindleSpeed: N,
         feedRate: F,
@@ -152,6 +155,7 @@ export async function generatePlan(
       featureRefId: 'LIFECYCLE',
       opNo: 10,
       type: 'Raw Material Prep',
+      machine: 'Horizontal Band Saw',
       tooling: 'Band Saw',
       spindleSpeed: 0,
       feedRate: 0,
@@ -161,6 +165,7 @@ export async function generatePlan(
       featureRefId: 'LIFECYCLE',
       opNo: currentOpNo,
       type: 'Deburr & Clean',
+      machine: 'Deburring Station',
       tooling: 'Manual',
       spindleSpeed: 0,
       feedRate: 0,
@@ -172,6 +177,7 @@ export async function generatePlan(
       featureRefId: 'LIFECYCLE',
       opNo: currentOpNo,
       type: 'Final Inspection',
+      machine: 'CMM',
       tooling: 'CMM',
       spindleSpeed: 0,
       feedRate: 0,

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { FeatureBuilder } from './FeatureBuilder';
 import { RouteSheet } from './RouteSheet';
+import { LoadingOverlay } from './LoadingOverlay';
 import { usePartStore } from '@/store/usePartStore';
 
 export function Dashboard() {
@@ -24,7 +25,8 @@ export function Dashboard() {
   if (!mounted) return null;
 
   return (
-    <div className="flex h-screen w-full bg-[#0d0f12] overflow-hidden text-slate-200">
+    <div className="relative flex flex-col lg:flex-row h-screen w-full bg-[#0d0f12] overflow-auto text-slate-200">
+      <LoadingOverlay />
       <Sidebar />
       <FeatureBuilder />
       <RouteSheet />
