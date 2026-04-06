@@ -8,6 +8,7 @@ interface PartState {
   includeLifecycle: boolean;
   dimensions: { x: number; y: number; z: number };
   features: PartFeature[];
+  operations: any[];
   isLoading: boolean;
   setPartName: (partName: string) => void;
   setMaterial: (material: string) => void;
@@ -17,6 +18,7 @@ interface PartState {
   removeFeature: (id: string) => void;
   updateFeature: (id: string, updates: Partial<PartFeature>) => void;
   setFeatures: (features: PartFeature[]) => void;
+  setOperations: (operations: any[]) => void;
   applyTemplate: (template: any) => void;
   setIsLoading: (isLoading: boolean) => void;
   loadFromBase64: (b64: string) => void;
@@ -31,6 +33,7 @@ export const usePartStore = create<PartState>()(
       includeLifecycle: false,
       dimensions: { x: 100, y: 100, z: 50 },
       features: [],
+      operations: [],
       isLoading: false,
       setPartName: (partName) => set({ partName }),
       setMaterial: (material) => set({ material }),
@@ -42,6 +45,7 @@ export const usePartStore = create<PartState>()(
         features: state.features.map(f => f.id === id ? { ...f, ...updates } : f)
       })),
       setFeatures: (features) => set({ features }),
+      setOperations: (operations) => set({ operations }),
       applyTemplate: (template) => set({
         partName: template.familyName,
         material: template.defaultMaterial,

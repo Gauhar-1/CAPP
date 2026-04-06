@@ -2,17 +2,18 @@
 
 import React, { useState } from 'react';
 import { usePartStore } from '@/store/usePartStore';
-import { Download, Share2, Play, Loader2 } from 'lucide-react';
+import { Download, Share2, Play, Loader2, GitMerge } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 export function RouteSheet() {
-  const { partName, material, dimensions, includeLifecycle, features, getBase64, setIsLoading } = usePartStore();
-  const [operations, setOperations] = useState<any[]>([]);
-
+  const router = useRouter();
+  const { partName, material, dimensions, includeLifecycle, features, operations, setOperations, getBase64, setIsLoading } = usePartStore();
+  
   const { mutate: generatePlan, isPending } = useMutation({
     onMutate: () => setIsLoading(true),
     onSettled: () => setIsLoading(false),
@@ -78,14 +79,30 @@ export function RouteSheet() {
           <h2 className="text-lg font-bold text-white glow-text">Generated Route Sheet</h2>
           <p className="text-xs text-slate-400 mt-1">{partName} | {material}</p>
         </div>
-        <button 
-          onClick={() => generatePlan()}
-          disabled={isPending || features.length === 0}
-          className="glow-button px-4 py-2 text-xs flex items-center gap-2 disabled:opacity-50"
-        >
-          {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-          <span>{isPending ? 'Calculating...' : 'Generate Plan'}</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.push('/visualization')}
+            disabled={operations.length === 0}
+            title={operations.length === 0 ? "Generate a process plan to unlock the visual flowchart." : "View 2D Process Flow"}
+            className={`px-4 py-2 text-xs flex items-center gap-2 rounded-md transition-all duration-300 font-medium ${
+              operations.length === 0 
+                ? "bg-slate-800 text-slate-500 opacity-50 cursor-not-allowed" 
+                : "bg-blue-600 hover:bg-blue-500 text-white shadow-lg hover:shadow-blue-500/50"
+            }`}
+          >
+            <GitMerge className="w-4 h-4" />
+            <span className="hidden sm:inline">Visual Flowchart</span>
+          </button>
+
+          <button 
+            onClick={() => generatePlan()}
+            disabled={isPending || features.length === 0}
+            className="glow-button px-4 py-2 text-xs flex items-center gap-2 disabled:opacity-50 font-medium"
+          >
+            {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+            <span className="hidden sm:inline">{isPending ? 'Calculating...' : 'Generate Plan'}</span>
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-2 relative">
